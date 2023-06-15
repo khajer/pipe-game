@@ -1,6 +1,5 @@
 extends Node2D
 
-
 const BLOCK_W = 80
 
 # Called when the node enters the scene tree for the first time.
@@ -12,7 +11,6 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
-
 
 func create_block():
 	print("create_block")
@@ -37,9 +35,9 @@ func create_block():
 			row.append(block)			
 		data.append(row)			
 	
-	show_data(data)
-	show_connect(data)
-	show_block_detail(data)
+#	show_data(data)
+#	show_connect(data)
+#	show_block_detail(data)
 	
 	
 func show_data(data):
@@ -69,32 +67,24 @@ func show_block_detail(data):
 				data[r][c].connect_bottom)
 			
 
-
 func gen_block(r, c):	
 	
-	var block = preload("res://scenes/Block.tscn").instance()	
-	block.position.x = c * BLOCK_W + (BLOCK_W/2)
-	block.position.y = r * BLOCK_W + (BLOCK_W/2)	
-	block.blocktype = 0
-	block.rotation_degrees = 0
+	var block = preload("res://scenes/BtnBlock.tscn").instance()	
 	
-#	var rng = RandomNumberGenerator.new()
-#	rng.randomize()
-#	var random = rng.randi_range(0, 3)
-#	var degree = 90 * random
-#
-#	block.rotation_degrees = degree
+	block.rect_position.x = c * BLOCK_W + (BLOCK_W/2)
+	block.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
+	block.blocktype = 0	
+
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	var random = rng.randi_range(0, 3)
+	var degree = 90 * random
+
+	block.rotation_degrees = degree
+	print("is_instance_valid : ", is_instance_valid(block))
 	
-	
-	
-	# rotate_block(block, degree)
 	return block
 	
-func rotate_block(block, degree):
-	var tween = Tween.new()
-	add_child(tween)
-	var rotVal = degree * (PI / 180)
-	var delay = 1
-	tween.interpolate_property(block, "rotation", self.rotation, self.rotation+rotVal, delay, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.start()
 	
+
+
