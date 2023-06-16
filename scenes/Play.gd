@@ -7,7 +7,6 @@ func _ready():
 	pass # Replace with function body
 	create_block()
 
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
@@ -19,8 +18,7 @@ func create_block():
 		var row = []
 		for c in range(0, 4):			
 			var block = gen_block( r, c)					
-			self.add_child(block)			
-			
+			self.add_child(block)						
 			#check left chain
 			if c != 0:
 				if block.connect_left == true and row[c-1].connect_right == true:
@@ -35,9 +33,9 @@ func create_block():
 			row.append(block)			
 		data.append(row)			
 	
-#	show_data(data)
-#	show_connect(data)
-#	show_block_detail(data)
+	show_data(data)
+	show_connect(data)
+	show_block_detail(data)
 	
 	
 func show_data(data):
@@ -65,10 +63,8 @@ func show_block_detail(data):
 				data[r][c].connect_right," ", 
 				data[r][c].connect_top, " ", 
 				data[r][c].connect_bottom)
-			
 
-func gen_block(r, c):	
-	
+func gen_block(r, c):		
 	var block = preload("res://scenes/BtnBlock.tscn").instance()	
 	
 	block.rect_position.x = c * BLOCK_W + (BLOCK_W/2)
@@ -80,11 +76,11 @@ func gen_block(r, c):
 	var random = rng.randi_range(0, 3)
 	var degree = 90 * random
 
-	block.rotation_degrees = degree
-	print("is_instance_valid : ", is_instance_valid(block))
+	block.rotation_degrees = degree	
+	block.connect("block_pressed", self, "on_block_pressed")
 	
 	return block
 	
+func on_block_pressed(block):
+	print("receive signal block_pressed", block)
 	
-
-

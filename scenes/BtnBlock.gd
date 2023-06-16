@@ -11,8 +11,12 @@ var connect_bottom = false
 
 var links = []
 
+const ROTATE_DEGREES = 90
+
+signal block_pressed
+
 func _ready():	
-#	_set_connect(self.rotation_degrees)
+	_set_connect()
 	set_rotate_degrees(rotation_degrees, true)
 	pass
 		
@@ -33,9 +37,9 @@ func rotate_block_tween(block, degree):
 	tween.start()
 		
 	
-func _set_connect(degree):	
+func _set_connect():		
 	if self.blocktype == 0:		
-		match (int(degree)):
+		match (int(self.rotation_degrees)):
 			0, 180:
 				connect_left = true
 				connect_right = true
@@ -50,13 +54,15 @@ func _set_connect(degree):
 				pass
 		
 
+
 func clear_link_block():
 	for link_block in links:
-		link_block.links.remove(self)
+		link_block.links.erase(self)
+		
+	links.clear()
 	
-
-
-
-func _on_BtnBlock_pressed():
-	print("test block pressed")
-	set_rotate_degrees(90, true)
+func _on_BtnBlock_pressed():		
+	rotation_degrees += ROTATE_DEGREES
+	set_rotate_degrees(ROTATE_DEGREES, true)	
+			
+	emit_signal("block_pressed", self)
