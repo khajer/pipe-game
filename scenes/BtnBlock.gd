@@ -1,6 +1,7 @@
 extends Button
 
 const DELAY_TIME_ANIMATE = 0.2
+class_name BtnBlock
 
 var blocktype = 0
 var rotation_degrees = 0
@@ -8,25 +9,26 @@ var connect_left = false
 var connect_right = false
 var connect_top = false
 var connect_bottom = false
-
+var is_last_path = false
 var links = []
+var col = 0
+var row = 0
 
 const ROTATE_DEGREES = 90
 
 signal block_pressed
 
 func _ready():	
-	_set_connect()
-	set_rotate_degrees(rotation_degrees, true)
-	pass
+	_set_connect_side()
+	set_rotate_degrees(rotation_degrees, true)		
 		
-
 func set_rotate_degrees(degrees, animate):	 
 	if animate == true:
 		rotate_block_tween(self.get_child(0), degrees)
 	else:
-		$AnimatedSprite.rotation_degrees = degrees
-
+		$AnimatedSprite.rotation_degrees = degrees			
+	_set_connect_side()
+		
 
 func rotate_block_tween(block, degree):	
 	var tween = Tween.new()
@@ -37,28 +39,27 @@ func rotate_block_tween(block, degree):
 	tween.start()
 		
 	
-func _set_connect():		
+func _set_connect_side():		
 	if self.blocktype == 0:		
-		match (int(self.rotation_degrees)):
+		match (int(self.rotation_degrees%360)):
 			0, 180:
 				connect_left = true
-				connect_right = true
 				connect_top = false
+				connect_right = true				
 				connect_bottom = false
 			90, 270:
 				connect_left = false
-				connect_right = false
 				connect_top = true
+				connect_right = false				
 				connect_bottom = true			
 			_:
 				pass
 		
 
-
 func clear_link_block():
 	for link_block in links:
 		link_block.links.erase(self)
-		
+
 	links.clear()
 	
 func _on_BtnBlock_pressed():		

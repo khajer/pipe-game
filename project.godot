@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Button",
+"class": "BtnBlock",
+"language": "GDScript",
+"path": "res://scenes/BtnBlock.gd"
+} ]
+_global_script_class_icons={
+"BtnBlock": ""
+}
+
 [application]
 
 config/name="pipe-game"
