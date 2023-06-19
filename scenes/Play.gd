@@ -77,7 +77,6 @@ func show_block_detail(data):
 				block_data[r][c].connect_bottom)
 
 
-
 func gen_value_block():
 	return [
 		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=0}],
@@ -87,6 +86,12 @@ func gen_value_block():
 		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
 	]
 	
+	#	var rng = RandomNumberGenerator.new()
+#	rng.randomize()
+#	var random = rng.randi_range(0, 3)
+#	var degree = 90 * random
+
+
 #	return [
 #		[0, 0, 0, 0],
 #		[0, 90, 0, 0],
@@ -102,36 +107,39 @@ func gen_block(r, c):
 	btn_animate.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
 	btn_animate.blocktype = 0		
 	btn_animate.rotation_degrees  = value_block[r][c].degrees	
+	btn_animate.row = r
+	btn_animate.col = c
 	btn_animate.connect("block_pressed", self, "on_block_pressed")	
 	
 	var block = Block.new(0, value_block[r][c].degrees)
 	block.btn_animate = btn_animate		
 	block.row = r
-	block.col = c			
+	block.col = c
+	block.rotation_degrees = value_block[r][c].degrees	
 	self.add_child(btn_animate)
-#	var rng = RandomNumberGenerator.new()
-#	rng.randomize()
-#	var random = rng.randi_range(0, 3)
-#	var degree = 90 * random
+	
 
 	
 	
 	return block
 	
 func on_block_pressed(r, c, rotation_degrees):
+	print(">>>>[", r, ", ", c, "] < row, col")
 	var block = block_data[r][c]
 	print("receive signal block_pressed", block)	
+	print("rotate : ", rotation_degrees)
 	print("> ",block.rotation_degrees, " ", block.connect_left, block.connect_top, block.connect_right, block.connect_bottom)	
 	
+	show_data(block_data)
 	block.rotate_block(rotation_degrees)
 	
 	clear_link_block(block)
 	
 	set_link_block(block)
 	
-#	show_data(block_data)
+	
 	show_connect(block_data)
-#	show_block_detail(block_data)
+	show_block_detail(block_data)
 	
 func clear_link_block(block: Block):
 	block.clear_link_block()

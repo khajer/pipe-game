@@ -16,7 +16,7 @@ var rotation_degrees = 0
 
 func _init(blocktype, rotation_degrees):
 	self.blocktype = blocktype
-	self.rotation_degrees = rotation_degrees
+	self.rotation_degrees = rotation_degrees	
 	_set_connect_side(int(self.rotation_degrees%360))
 	
 func _set_connect_side(degrees):		
@@ -34,10 +34,16 @@ func _set_connect_side(degrees):
 				connect_bottom = true			
 			_:
 				pass
-		
+
+
+			
 func rotate_block(degree):
-	self.rotation_degrees += rotation_degrees
-	self._set_connect_side(self.rotation_degrees)
+	print("[", row, ", ", col, "] old degree >> ", self.rotation_degrees)
+	self.rotation_degrees += degree
+	if self.rotation_degrees > 360:
+		self.rotation_degrees -= 360 
+	print("new degree >> ", self.rotation_degrees)
+	_set_connect_side(self.rotation_degrees)
 	
 func clear_link_block():
 	for link_block in links:
