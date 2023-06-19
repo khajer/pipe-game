@@ -7,7 +7,7 @@ var block_data = []
 # Called when the node enters the scene tree for the first time.
 func _ready():		
 	value_block = gen_value_block()
-	create_block()
+	create_block()	
 	
 	var block_path = find_block_pass_path()
 	if len(block_path) > 0 :
@@ -25,10 +25,7 @@ func create_block():
 	for r in range (0, 5):
 		var row = []
 		for c in range(0, 4):			
-			var block = gen_block( r, c)
-			block.row = r
-			block.col = c			
-			self.add_child(block)
+			var block = gen_block( r, c)			
 						
 			if c == 3:
 				block.is_last_path = true
@@ -83,47 +80,64 @@ func show_block_detail(data):
 
 func gen_value_block():
 	return [
-		[0, 0, 0, 0],
-		[0, 90, 0, 0],
-		[0, 90, 0, 180],
-		[0, 90, 0, 0],
-		[0, 0, 90, 0],
-	]	
+		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=0}],
+		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=0}],
+		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=180}],
+		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
+		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
+	]
 	
-func gen_block(r, c):		
-	var block = preload("res://scenes/BtnBlock.tscn").instance()	
+#	return [
+#		[0, 0, 0, 0],
+#		[0, 90, 0, 0],
+#		[0, 90, 0, 180],
+#		[0, 90, 0, 0],
+#		[0, 0, 90, 0],
+#	]	
 	
-	block.rect_position.x = c * BLOCK_W + (BLOCK_W/2)
-	block.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
-	block.blocktype = 0		
+func gen_block(r, c):			
 	
-	#	var rng = RandomNumberGenerator.new()
+	var btn_animate = preload("res://scenes/BtnBlock.tscn").instance()	
+	btn_animate.rect_position.x = c * BLOCK_W + (BLOCK_W/2)
+	btn_animate.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
+	btn_animate.blocktype = 0		
+	btn_animate.rotation_degrees  = value_block[r][c].degrees	
+	btn_animate.connect("block_pressed", self, "on_block_pressed")	
+	
+	var block = Block.new(0, value_block[r][c].degrees)
+	block.btn_animate = btn_animate		
+	block.row = r
+	block.col = c			
+	self.add_child(btn_animate)
+#	var rng = RandomNumberGenerator.new()
 #	rng.randomize()
 #	var random = rng.randi_range(0, 3)
 #	var degree = 90 * random
-	block.rotation_degrees  = value_block[r][c]
+
 	
-	block.connect("block_pressed", self, "on_block_pressed")	
 	
 	return block
 	
-func on_block_pressed(block: BtnBlock):
+func on_block_pressed(r, c, rotation_degrees):
+	var block = block_data[r][c]
 	print("receive signal block_pressed", block)	
 	print("> ",block.rotation_degrees, " ", block.connect_left, block.connect_top, block.connect_right, block.connect_bottom)	
+	
+	block.rotate_block(rotation_degrees)
+	
 	clear_link_block(block)
+	
 	set_link_block(block)
 	
 #	show_data(block_data)
 	show_connect(block_data)
 #	show_block_detail(block_data)
 	
-func clear_link_block(block: BtnBlock):
+func clear_link_block(block: Block):
 	block.clear_link_block()
-
 	
 	
-	
-func set_link_block(block: BtnBlock):		
+func set_link_block(block: Block):		
 	if block.connect_left == true and block.col-1 >= 0 and block_data[block.row][block.col-1].connect_right == true :
 		block_data[block.row][block.col-1].links.append(block)
 		block.links.append(block_data[block.row][block.col-1])
@@ -141,43 +155,33 @@ func set_link_block(block: BtnBlock):
 		block_data[block.row+1][block.col].links.append(block)
 
 		
-func check_block(block: BtnBlock, blockpath):
-	print(" >> block check: ", block, ", ", blockpath)
-	
+func check_block(block: Block, blockpath):
 	if block.is_last_path == true and block.connect_right == true:
-		print("final : ", blockpath)
 		return blockpath
-	else:	
-		
+	else:			
 		var block_next = block.links
-		print("next : ", block_next)
-#
 		if len(blockpath) > 0 :				
 			for b_chk in blockpath:
 				for b in block_next:				
-					if b_chk != b:
+					if b_chk == b:
 						block_next.erase(b_chk)
+		
 		for b in block_next:
-			print("next : ", b)
 			blockpath.append(block)
-			return check_block(b, blockpath)				
-			
+			return check_block(b, blockpath)							
 		return []	
 
 func find_block_pass_path():
 	var head_blocks = [
 		block_data[0][0], 
 		block_data[1][0],
-		block_data[2][0],
+		block_data[2][0],		
 		block_data[3][0],
-		block_data[4][0],
-	]
-		
-	print(block_data[0][0], " ", block_data[0][1], " ", block_data[0][2], " ", block_data[0][3])
-	print(block_data[0][0].links)
-	print(block_data[0][1].links)
-	print(block_data[0][2].links)
-	print(block_data[0][3].links)
+		block_data[4][0]
+	]		
+	
+	print(block_data[3][0], " ", block_data[3][1], " ", block_data[3][2], " ", block_data[3][3])
+
 	for block_start in head_blocks:
 		var paths = check_block(block_start, [])
 		print(paths)
