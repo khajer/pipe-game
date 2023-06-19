@@ -36,7 +36,12 @@ func _set_connect_side(degrees):
 				pass
 
 
-			
+func setRowCol(r, c):
+	row = r
+	col = c
+	btn_animate.row = r
+	btn_animate.col = c
+	
 func rotate_block(degree):
 	print("[", row, ", ", col, "] old degree >> ", self.rotation_degrees)
 	self.rotation_degrees += degree

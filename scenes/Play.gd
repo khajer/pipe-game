@@ -86,7 +86,7 @@ func gen_value_block():
 		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
 	]
 	
-	#	var rng = RandomNumberGenerator.new()
+#	var rng = RandomNumberGenerator.new()
 #	rng.randomize()
 #	var random = rng.randi_range(0, 3)
 #	var degree = 90 * random
@@ -107,19 +107,13 @@ func gen_block(r, c):
 	btn_animate.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
 	btn_animate.blocktype = 0		
 	btn_animate.rotation_degrees  = value_block[r][c].degrees	
-	btn_animate.row = r
-	btn_animate.col = c
 	btn_animate.connect("block_pressed", self, "on_block_pressed")	
 	
 	var block = Block.new(0, value_block[r][c].degrees)
 	block.btn_animate = btn_animate		
-	block.row = r
-	block.col = c
+	block.setRowCol(r, c)
 	block.rotation_degrees = value_block[r][c].degrees	
 	self.add_child(btn_animate)
-	
-
-	
 	
 	return block
 	
@@ -133,13 +127,22 @@ func on_block_pressed(r, c, rotation_degrees):
 	show_data(block_data)
 	block.rotate_block(rotation_degrees)
 	
-	clear_link_block(block)
+	clear_link_block(block)	
+	set_link_block(block)	
 	
-	set_link_block(block)
+#	show_connect(block_data)
+#	show_block_detail(block_data)
 	
-	
-	show_connect(block_data)
-	show_block_detail(block_data)
+	var block_path = find_block_pass_path()
+	if len(block_path) > 0 :
+		print("found", block_path)
+		animate_path(block_path)
+	else:
+		print("not found")
+
+func animate_path(block_path):
+	pass
+
 	
 func clear_link_block(block: Block):
 	block.clear_link_block()
