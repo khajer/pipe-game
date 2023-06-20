@@ -133,16 +133,21 @@ func on_block_pressed(r, c, rotation_degrees):
 #	show_connect(block_data)
 #	show_block_detail(block_data)
 	
-	var block_path = find_block_pass_path()
-	if len(block_path) > 0 :
-		print("found", block_path)
-		animate_path(block_path)
+	var block_paths = find_block_pass_path()
+	if len(block_paths) > 0 :
+		print("found", block_paths)
+		destroy_path(block_paths)
+		movedown_and_generate_block()
 	else:
 		print("not found")
 
-func animate_path(block_path):
+func destroy_path(block_paths):
+	for blockpath in block_paths:
+		for block in blockpath:
+			block.btn_animate.queue_free()
+	
+func movedown_and_generate_block():
 	pass
-
 	
 func clear_link_block(block: Block):
 	block.clear_link_block()
@@ -168,6 +173,7 @@ func set_link_block(block: Block):
 		
 func check_block(block: Block, blockpath):
 	if block.is_last_path == true and block.connect_right == true:
+		blockpath.append(block)
 		return blockpath
 	else:			
 		var block_next = block.links
@@ -183,6 +189,8 @@ func check_block(block: Block, blockpath):
 		return []	
 
 func find_block_pass_path():
+	var path_all = []
+	
 	var head_blocks = [
 		block_data[0][0], 
 		block_data[1][0],
@@ -197,9 +205,9 @@ func find_block_pass_path():
 		var paths = check_block(block_start, [])
 		print(paths)
 		if len(paths) != 0:
-			return paths		
+			path_all.append(paths) 
 	
-	return []
+	return path_all
 
 	
 
