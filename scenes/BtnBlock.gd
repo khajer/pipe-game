@@ -62,13 +62,20 @@ func clear_link_block():
 	for link_block in links:
 		link_block.links.erase(self)
 
-	links.clear()
-
-
-	
+	links.clear()	
 	
 func _on_BtnBlock_pressed():		
 	rotation_degrees += ROTATE_DEGREES
 	set_rotate_degrees(ROTATE_DEGREES, true)	
 			
 	emit_signal("block_pressed", row , col, ROTATE_DEGREES)
+
+func move_to(x, y, animate=false):
+	if !animate:
+		self.rect_position.x = x
+		self.rect_position.y = y
+	else:
+		var tween = Tween.new()
+		add_child(tween)		
+		tween.interpolate_property(self, "rect_position", self.rect_position, Vector2(x, y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		tween.start()

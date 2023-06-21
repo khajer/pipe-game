@@ -6,6 +6,8 @@ var connect_top = false
 var connect_bottom = false
 var is_last_path = false
 
+var is_destroy = false
+
 var links = []
 var col = 0
 var row = 0
@@ -34,7 +36,6 @@ func _set_connect_side(degrees):
 				connect_bottom = true			
 			_:
 				pass
-
 
 func setRowCol(r, c):
 	row = r

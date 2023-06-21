@@ -1,6 +1,8 @@
 extends Node2D
 
 const BLOCK_W = 80
+const MAX_COL = 4
+const MAX_ROW = 5
 
 var value_block = []
 var block_data = []		
@@ -14,6 +16,8 @@ func _ready():
 		print("found", block_path)
 	else:
 		print("not found")
+		
+	test()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -22,12 +26,12 @@ func _ready():
 func create_block():
 	print("create_block")
 	
-	for r in range (0, 5):
+	for r in range (0, MAX_ROW):
 		var row = []
-		for c in range(0, 4):			
+		for c in range(0, MAX_COL):			
 			var block = gen_block( r, c)			
 						
-			if c == 3:
+			if c == MAX_COL-1:
 				block.is_last_path = true
 			
 			if c > 0:
@@ -49,17 +53,17 @@ func create_block():
 	
 	
 func show_data(data):
-	for r in range(0, 5):
+	for r in range(0, MAX_ROW):
 		var s = ""
-		for c in range (0, 4):
+		for c in range (0, MAX_COL):
 			s += str(data[r][c].rotation_degrees) + ", "				
 		print(s)
 		
 func show_connect(data):
 	print("--")
-	for r in range(0, 5):
+	for r in range(0, MAX_ROW):
 		var s = ""
-		for c in range (0, 4):
+		for c in range (0, MAX_COL):
 			if len(data[r][c].links) > 0:
 				s += str(len(data[r][c].links)) + ", "		
 			else:
@@ -68,8 +72,8 @@ func show_connect(data):
 
 func show_block_detail(data):
 	print("--")
-	for r in range(0, 5):		
-		for c in range (0, 4):
+	for r in range(0, MAX_ROW):		
+		for c in range (0, MAX_COL):
 			print(r, " ", c, ": ", 
 				block_data[r][c].connect_left, " ", 
 				block_data[r][c].connect_top," ", 
@@ -135,9 +139,9 @@ func on_block_pressed(r, c, rotation_degrees):
 	
 	var block_paths = find_block_pass_path()
 	if len(block_paths) > 0 :
-		print("found", block_paths)
+		print("found ", len(block_paths), " paths = > ", block_paths)
 		destroy_path(block_paths)
-		movedown_and_generate_block()
+		
 	else:
 		print("not found")
 
@@ -145,9 +149,27 @@ func destroy_path(block_paths):
 	for blockpath in block_paths:
 		for block in blockpath:
 			block.btn_animate.queue_free()
-	
-func movedown_and_generate_block():
-	pass
+			block.is_destroy = true
+				
+	for c in MAX_COL: 			
+		put_down_block(c, block_data)
+		animate_block_on_position()
+
+
+func put_down_block(col, src_data):		
+	var tmp = null
+	for row in range(MAX_ROW-1, -1, -1):		
+		if src_data[row][col].is_destroy == true:						
+			for r_chk in range(row-1, -1, -1):
+				if src_data[r_chk][col].is_destroy == false:
+					tmp = src_data[row][col]
+					src_data[row][col] = src_data[r_chk][col]
+					src_data[r_chk][col] = tmp
+					break
+
+			
+func move_down_block(block):
+	pass		
 	
 func clear_link_block(block: Block):
 	block.clear_link_block()
@@ -162,11 +184,11 @@ func set_link_block(block: Block):
 		block_data[block.row-1][block.col].links.append(block)
 		block.links.append(block_data[block.row-1][block.col])
 #
-	if block.connect_right == true and block.col+1 < 4 and block_data[block.row][block.col+1].connect_left == true:
+	if block.connect_right == true and block.col+1 < MAX_COL and block_data[block.row][block.col+1].connect_left == true:
 		block.links.append(block_data[block.row][block.col+1])
 		block_data[block.row][block.col+1].links.append(block)
 #
-	if block.connect_bottom == true and block.row +1 < 5 and block_data[block.row+1][block.col].connect_top == true :
+	if block.connect_bottom == true and block.row +1 < MAX_ROW and block_data[block.row+1][block.col].connect_top == true :
 		block.links.append(block_data[block.row+1][block.col])
 		block_data[block.row+1][block.col].links.append(block)
 
@@ -181,8 +203,7 @@ func check_block(block: Block, blockpath):
 			for b_chk in blockpath:
 				for b in block_next:				
 					if b_chk == b:
-						block_next.erase(b_chk)
-		
+						block_next.erase(b_chk)		
 		for b in block_next:
 			blockpath.append(block)
 			return check_block(b, blockpath)							
@@ -198,19 +219,119 @@ func find_block_pass_path():
 		block_data[3][0],
 		block_data[4][0]
 	]		
-	
-	print(block_data[3][0], " ", block_data[3][1], " ", block_data[3][2], " ", block_data[3][3])
-
+		
 	for block_start in head_blocks:
 		var paths = check_block(block_start, [])
 		print(paths)
 		if len(paths) != 0:
 			path_all.append(paths) 
+		else:
+			create_new_value_block()
 	
 	return path_all
 
+func animate_block_on_position():
+	for row in MAX_ROW:
+		for col in MAX_COL:
+			if block_data[row][col].btn_animate.rect_position.x != col * BLOCK_W + (BLOCK_W/2) or block_data[row][col].btn_animate.rect_position.y != row * BLOCK_W + (BLOCK_W/2):				
+				block_data[row][col].btn_animate.move_to(col * BLOCK_W + (BLOCK_W/2), row * BLOCK_W + (BLOCK_W/2), true)
+				
+				
+#			btn_animate.rect_position.x = c * BLOCK_W + (BLOCK_W/2)
+#			btn_animate.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
+			
+	pass
+
+
+func create_new_value_block():
+	pass
 	
 
+func test():
+	put_down_block_test()
+	
+func put_down_block_test():
+	print("---- test1 ----")
+	var data_test = [
+		[{is_destroy=false, value="0"}],
+		[{is_destroy=false, value="1"}],
+		[{is_destroy=false, value="2"}],
+		[{is_destroy=false, value="3"}],
+		[{is_destroy=true, value="4"}],
+	]
+	print("---- ")
+	put_down_block(0, data_test)	
+	print(data_test[0][0].value=="4")
+	print(data_test[1][0].value=="0")
+	print(data_test[2][0].value=="1")
+	print(data_test[3][0].value=="2")
+	print(data_test[4][0].value=="3")		
+	
+	print("---- test2 ----")
+	data_test = [
+		[{is_destroy=false, value="0"}],
+		[{is_destroy=false, value="1"}],
+		[{is_destroy=true, value="2"}],
+		[{is_destroy=false, value="3"}],
+		[{is_destroy=true, value="4"}],
+	]	
+	print("---- ")
+	put_down_block(0, data_test)
+	print(data_test[0][0].value=="2")
+	print(data_test[1][0].value=="4")
+	print(data_test[2][0].value=="0")
+	print(data_test[3][0].value=="1")
+	print(data_test[4][0].value=="3")		
+	
+	print("---- test3 ----")
+	data_test = [
+		[{is_destroy=false, value="0"}],
+		[{is_destroy=false, value="1"}],
+		[{is_destroy=false, value="2"}],
+		[{is_destroy=false, value="3"}],
+		[{is_destroy=false, value="4"}],
+	]	
+	print("---- ")
+	put_down_block(0, data_test)
+	print(data_test[0][0].value=="0")
+	print(data_test[1][0].value=="1")
+	print(data_test[2][0].value=="2")
+	print(data_test[3][0].value=="3")
+	print(data_test[4][0].value=="4")		
+	
+	print("---- test4 ----")
+	data_test = [
+		[{is_destroy=true, value="0"}],
+		[{is_destroy=false, value="1"}],
+		[{is_destroy=false, value="2"}],
+		[{is_destroy=false, value="3"}],
+		[{is_destroy=false, value="4"}],
+	]	
+	print("---- ")
+	put_down_block(0, data_test)
+	print(data_test[0][0].value=="0")
+	print(data_test[1][0].value=="1")
+	print(data_test[2][0].value=="2")
+	print(data_test[3][0].value=="3")
+	print(data_test[4][0].value=="4")
+	
+	print("---- test5 ----")
+	data_test = [
+		[{is_destroy=true, value="0"}],
+		[{is_destroy=false, value="1"}],
+		[{is_destroy=false, value="2"}],
+		[{is_destroy=false, value="3"}],
+		[{is_destroy=false, value="4"}],
+	]	
+	print("---- ")
+	put_down_block(0, data_test)
+	print(data_test[0][0].value=="0")
+	print(data_test[1][0].value=="1")
+	print(data_test[2][0].value=="2")
+	print(data_test[3][0].value=="3")
+	print(data_test[4][0].value=="4")
+	
+	
 	
 	
 	
