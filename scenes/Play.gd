@@ -4,8 +4,12 @@ const BLOCK_W = 80
 const MAX_COL = 4
 const MAX_ROW = 5
 
+const DELAY_TIME = 1
 var value_block = []
 var block_data = []		
+
+var dynamicTimer: Timer
+
 # Called when the node enters the scene tree for the first time.
 func _ready():		
 	value_block = gen_value_block()
@@ -148,9 +152,23 @@ func on_block_pressed(r, c, rotation_degrees):
 func destroy_path(block_paths):
 	for blockpath in block_paths:
 		for block in blockpath:
-			block.btn_animate.queue_free()
 			block.is_destroy = true
-				
+#			block.btn_animate.queue_free()
+			block.btn_animate.get_child(0).play("destroy") # <--- delete object
+	
+	dynamicTimer = Timer.new()
+	dynamicTimer.wait_time = DELAY_TIME
+	dynamicTimer.one_shot = true
+	
+	dynamicTimer.connect("timeout", self, "_on_Timer_timeout")
+	add_child(dynamicTimer)
+	
+	dynamicTimer.start()
+	
+func _on_Timer_timeout():
+	animate_all_block()
+
+func animate_all_block():						
 	for c in MAX_COL: 			
 		put_down_block(c, block_data)
 		animate_block_on_position()
@@ -168,8 +186,6 @@ func put_down_block(col, src_data):
 					break
 
 			
-func move_down_block(block):
-	pass		
 	
 func clear_link_block(block: Block):
 	block.clear_link_block()
@@ -233,14 +249,12 @@ func find_block_pass_path():
 func animate_block_on_position():
 	for row in MAX_ROW:
 		for col in MAX_COL:
-			if block_data[row][col].btn_animate.rect_position.x != col * BLOCK_W + (BLOCK_W/2) or block_data[row][col].btn_animate.rect_position.y != row * BLOCK_W + (BLOCK_W/2):				
-				block_data[row][col].btn_animate.move_to(col * BLOCK_W + (BLOCK_W/2), row * BLOCK_W + (BLOCK_W/2), true)
-				
-				
-#			btn_animate.rect_position.x = c * BLOCK_W + (BLOCK_W/2)
-#			btn_animate.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
-			
-	pass
+			if !block_data[row][col].is_destroy:												
+				if block_data[row][col].btn_animate.rect_position.x != col * BLOCK_W + (BLOCK_W/2) or block_data[row][col].btn_animate.rect_position.y != row * BLOCK_W + (BLOCK_W/2):				
+					block_data[row][col].btn_animate.move_to(col * BLOCK_W + (BLOCK_W/2), row * BLOCK_W + (BLOCK_W/2), true)
+			else:
+				block_data[row][col].btn_animate.queue_free()
+							
 
 
 func create_new_value_block():

@@ -77,5 +77,6 @@ func move_to(x, y, animate=false):
 	else:
 		var tween = Tween.new()
 		add_child(tween)		
-		tween.interpolate_property(self, "rect_position", self.rect_position, Vector2(x, y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		tween.interpolate_property(self, "rect_position", self.rect_position, Vector2(x, y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)		
+		
 		tween.start()
