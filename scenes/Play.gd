@@ -151,14 +151,16 @@ func on_block_pressed(r, c, rotation_degrees):
 
 func check_block_path():	
 	var block_paths = find_block_pass_path()
-	if len(block_paths) > 0 :
-		print("found ", len(block_paths), " paths = > ", block_paths)
-		
-		destroy_path(block_paths)
+	if len(block_paths) > 0 :				
+		move_cat()
+#		destroy_path(block_paths)
 		
 	else:
 		print("not found")
 
+func move_cat():
+	print("move cat ")
+	
 func destroy_path(block_paths):
 	for blockpath in block_paths:
 		for block in blockpath:
