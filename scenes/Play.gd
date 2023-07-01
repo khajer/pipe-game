@@ -12,8 +12,11 @@ var dynamicTimer: Timer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():		
+	
+	test()
+	
 	value_block = gen_value_block()
-	create_block()	
+	create_block(value_block)	
 	
 	var block_path = find_block_pass_path()
 	if len(block_path) > 0 :
@@ -21,19 +24,19 @@ func _ready():
 	else:
 		print("not found")
 		
-	test()
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
 
-func create_block():
-	print("create_block")
+func create_block(value_block):
+	print("create_block : ", value_block)
 	
 	for r in range (0, MAX_ROW):
 		var row = []
 		for c in range(0, MAX_COL):			
-			var block = gen_block( r, c)			
+			var block = gen_block( r, c, value_block[r][c].degrees)			
 						
 			if c == MAX_COL-1:
 				block.is_last_path = true
@@ -108,22 +111,26 @@ func gen_value_block():
 #		[0, 0, 90, 0],
 #	]	
 	
-func gen_block(r, c):			
+func gen_block(r, c, block_degree):			
 	
 	var btn_animate = preload("res://scenes/BtnBlock.tscn").instance()	
 	btn_animate.rect_position.x = c * BLOCK_W + (BLOCK_W/2)
 	btn_animate.rect_position.y = r * BLOCK_W + (BLOCK_W/2)	
 	btn_animate.blocktype = 0		
-	btn_animate.rotation_degrees  = value_block[r][c].degrees	
+	btn_animate.rotation_degrees  = block_degree	
 	btn_animate.connect("block_pressed", self, "on_block_pressed")	
 	
-	var block = Block.new(0, value_block[r][c].degrees)
+	var block = Block.new(0, block_degree)
 	block.btn_animate = btn_animate		
 	block.setRowCol(r, c)
-	block.rotation_degrees = value_block[r][c].degrees	
+	block.rotation_degrees = block_degree	
 	self.add_child(btn_animate)
 	
 	return block
+	
+func rotate_block_complete():
+	print("rotate_block_complete")
+	pass
 	
 func on_block_pressed(r, c, rotation_degrees):
 	print(">>>>[", r, ", ", c, "] < row, col")
@@ -133,17 +140,20 @@ func on_block_pressed(r, c, rotation_degrees):
 	print("> ",block.rotation_degrees, " ", block.connect_left, block.connect_top, block.connect_right, block.connect_bottom)	
 	
 	show_data(block_data)
-	block.rotate_block(rotation_degrees)
+	block.rotate_block(rotation_degrees)	
 	
 	clear_link_block(block)	
 	set_link_block(block)	
 	
 #	show_connect(block_data)
 #	show_block_detail(block_data)
-	
+	check_block_path()
+
+func check_block_path():	
 	var block_paths = find_block_pass_path()
 	if len(block_paths) > 0 :
 		print("found ", len(block_paths), " paths = > ", block_paths)
+		
 		destroy_path(block_paths)
 		
 	else:
@@ -153,20 +163,18 @@ func destroy_path(block_paths):
 	for blockpath in block_paths:
 		for block in blockpath:
 			block.is_destroy = true
-#			block.btn_animate.queue_free()
-			block.btn_animate.get_child(0).play("destroy") # <--- delete object
-	
+			block.btn_animate.get_child(0).play("destroy") 
+		
+	add_delay_wait_to_destroy()
+
+func add_delay_wait_to_destroy():
 	dynamicTimer = Timer.new()
 	dynamicTimer.wait_time = DELAY_TIME
 	dynamicTimer.one_shot = true
 	
-	dynamicTimer.connect("timeout", self, "_on_Timer_timeout")
-	add_child(dynamicTimer)
-	
+	dynamicTimer.connect("timeout", self, "animate_all_block")
+	add_child(dynamicTimer)	
 	dynamicTimer.start()
-	
-func _on_Timer_timeout():
-	animate_all_block()
 
 func animate_all_block():						
 	for c in MAX_COL: 			
@@ -240,9 +248,7 @@ func find_block_pass_path():
 		var paths = check_block(block_start, [])
 		print(paths)
 		if len(paths) != 0:
-			path_all.append(paths) 
-		else:
-			create_new_value_block()
+			path_all.append(paths) 		
 	
 	return path_all
 
@@ -256,10 +262,6 @@ func animate_block_on_position():
 				block_data[row][col].btn_animate.queue_free()
 							
 
-
-func create_new_value_block():
-	pass
-	
 
 func test():
 	put_down_block_test()

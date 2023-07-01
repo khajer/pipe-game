@@ -22,7 +22,7 @@ signal block_pressed
 
 func _ready():			
 #	_set_connect_side()
-	set_rotate_degrees(rotation_degrees, true)		
+	set_rotate_degrees(rotation_degrees, false)		
 		
 func set_rotate_degrees(degrees, animate):	 
 	if animate == true:
@@ -38,26 +38,14 @@ func rotate_block_tween(block, degree):
 	var rotVal = degree * (PI / 180)
 	
 	tween.interpolate_property(block, "rotation", block.rotation, block.rotation+rotVal, DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.interpolate_property(block, "rotation", block.rotation, block.rotation+rotVal, DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
+	tween.interpolate_callback(self, DELAY_TIME_ANIMATE, "on_rotate_completed")
+
+func on_rotate_completed():
+	emit_signal("block_pressed", row , col, ROTATE_DEGREES)
 		
 	
-#func _set_connect_side():		
-#	if self.blocktype == 0:		
-#		match (int(self.rotation_degrees%360)):
-#			0, 180:
-#				connect_left = true
-#				connect_top = false
-#				connect_right = true				
-#				connect_bottom = false
-#			90, 270:
-#				connect_left = false
-#				connect_top = true
-#				connect_right = false				
-#				connect_bottom = true			
-#			_:
-#				pass
-		
-
 func clear_link_block():
 	for link_block in links:
 		link_block.links.erase(self)
@@ -68,7 +56,7 @@ func _on_BtnBlock_pressed():
 	rotation_degrees += ROTATE_DEGREES
 	set_rotate_degrees(ROTATE_DEGREES, true)	
 			
-	emit_signal("block_pressed", row , col, ROTATE_DEGREES)
+#	
 
 func move_to(x, y, animate=false):
 	if !animate:
@@ -77,6 +65,6 @@ func move_to(x, y, animate=false):
 	else:
 		var tween = Tween.new()
 		add_child(tween)		
-		tween.interpolate_property(self, "rect_position", self.rect_position, Vector2(x, y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)		
+		tween.interpolate_property(self, "rect_position", self.rect_position, Vector2(x, y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 		
 		tween.start()

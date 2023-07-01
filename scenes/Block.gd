@@ -1,5 +1,7 @@
 class_name Block
 
+const MAX_DEGREES = 360
+
 var connect_left = false
 var connect_right = false
 var connect_top = false
@@ -43,12 +45,11 @@ func setRowCol(r, c):
 	btn_animate.row = r
 	btn_animate.col = c
 	
-func rotate_block(degree):
-	print("[", row, ", ", col, "] old degree >> ", self.rotation_degrees)
+func rotate_block(degree):	
 	self.rotation_degrees += degree
-	if self.rotation_degrees > 360:
-		self.rotation_degrees -= 360 
-	print("new degree >> ", self.rotation_degrees)
+	if self.rotation_degrees > MAX_DEGREES:
+		self.rotation_degrees -= MAX_DEGREES 
+			
 	_set_connect_side(self.rotation_degrees)
 	
 func clear_link_block():
