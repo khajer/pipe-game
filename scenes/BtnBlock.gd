@@ -29,7 +29,6 @@ func set_rotate_degrees(degrees, animate):
 		rotate_block_tween(self.get_child(0), degrees)
 	else:
 		$AnimatedSprite.rotation_degrees = degrees			
-#	_set_connect_side()
 		
 
 func rotate_block_tween(block, degree):	
@@ -58,13 +57,13 @@ func _on_BtnBlock_pressed():
 			
 #	
 
-func move_to(x, y, animate=false):
+func move_to(x, y, animate=false, delay_time=DELAY_TIME_ANIMATE):
 	if !animate:
 		self.rect_position.x = x
 		self.rect_position.y = y
 	else:
 		var tween = Tween.new()
 		add_child(tween)		
-		tween.interpolate_property(self, "rect_position", self.rect_position, Vector2(x, y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		tween.interpolate_property(self, "rect_position", self.rect_position, Vector2(x, y), delay_time, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 		
 		tween.start()

@@ -4,8 +4,8 @@ const BLOCK_W = 80
 const MAX_COL = 4
 const MAX_ROW = 5
 const DELAY_TIME = 1
+const ANIMATE_TIME_BOX_DOWN = 0.2	
 
-var value_block = []
 var block_data = []
 var dynamicTimer: Timer
 var is_go = false
@@ -14,7 +14,7 @@ func _ready():
 	
 	test()
 	
-	value_block = gen_value_block()
+	var value_block = gen_value_block()
 	create_block(value_block)
 	
 	var block_path = find_block_pass_path()
@@ -23,20 +23,13 @@ func _ready():
 	else:
 		print("not found")
 		
-	
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
 
 func create_block(value_block):
-	print("create_block : ", value_block)
-	
+	print("create_block : ", value_block)	
 	for r in range (0, MAX_ROW):
 		var row = []
 		for c in range(0, MAX_COL):
-			var block = gen_block( r, c, value_block[r][c].degrees)
-						
+			var block = gen_block( r, c, value_block[r][c].degrees)						
 			if c == MAX_COL-1:
 				block.is_last_path = true
 			
@@ -56,7 +49,6 @@ func create_block(value_block):
 	show_data(block_data)
 	show_connect(block_data)
 	show_block_detail(block_data)
-	
 	
 func show_data(data):
 	for r in range(0, MAX_ROW):
@@ -110,29 +102,25 @@ func gen_value_block():
 #		[0, 0, 90, 0],
 #	]	
 	
-func gen_block(r, c, block_degree):
-	
-	var btn_animate = preload("res://scenes/BtnBlock.tscn").instance()
-	
-	
-	btn_animate.rect_position.x = c * BLOCK_W + 30
-	btn_animate.rect_position.y = r * BLOCK_W + 220
+func create_button_block(r, c, block_degree):
+	var btn_animate = preload("res://scenes/BtnBlock.tscn").instance()		
+	btn_animate.rect_position.x = c * BLOCK_W
+	btn_animate.rect_position.y = r * BLOCK_W
 	btn_animate.blocktype = 0
 	btn_animate.rotation_degrees  = block_degree
 	btn_animate.connect("block_pressed", self, "on_block_pressed")
+	$Blocks.add_child(btn_animate)
+	return btn_animate
 	
+func gen_block(r, c, block_degree):	
 	var block = Block.new(0, block_degree)
-	block.btn_animate = btn_animate
+	block.btn_animate = create_button_block(r, c, block_degree)
 	block.setRowCol(r, c)
-	block.rotation_degrees = block_degree
-	self.add_child(btn_animate)
+	block.rotation_degrees = block_degree	
 	
 	return block
 	
-func rotate_block_complete():
-	print("rotate_block_complete")
-	pass
-	
+
 func on_block_pressed(r, c, rotation_degrees):
 	print(">>>>[", r, ", ", c, "] < row, col")
 	var block = block_data[r][c]
@@ -161,7 +149,7 @@ func check_block_path_allow():
 		else:
 			go_back_home_cat()
 	
-#		destroy_path(block_paths)
+		destroy_path(block_paths)
 		
 	else:
 		print("not found")
@@ -179,7 +167,6 @@ func destroy_path(block_paths):
 			block.is_destroy = true
 			block.btn_animate.get_child(0).play("destroy")
 		
-	add_delay_wait_to_destroy()
 
 func add_delay_wait_to_destroy():
 	dynamicTimer = Timer.new()
@@ -187,14 +174,39 @@ func add_delay_wait_to_destroy():
 	dynamicTimer.one_shot = true
 	
 	dynamicTimer.connect("timeout", self, "animate_all_block")
-	add_child(dynamicTimer)
+	
+	if !dynamicTimer.is_inside_tree():
+		add_child(dynamicTimer)
+		
 	dynamicTimer.start()
 
-func animate_all_block():
+func animate_all_block():	
+	print("animate all block")			
+	var timerAnimate = Timer.new()
+	timerAnimate.wait_time = ANIMATE_TIME_BOX_DOWN
+	timerAnimate.one_shot = true
+	timerAnimate.connect("timeout", self, "animate_block_completed")
+	if !timerAnimate.is_inside_tree():
+		add_child(timerAnimate)
+	timerAnimate.start()
+	
 	for c in MAX_COL:
 		put_down_block(c, block_data)
-		animate_block_on_position()
+	
+	animate_block_on_position(ANIMATE_TIME_BOX_DOWN)
 
+
+func animate_block_completed():	
+	print("create fist row blockdata")
+	for c in range(0, MAX_COL):
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		var random = rng.randi_range(0, 3)
+		var degree = 90 * random
+		print("create block row [0, ",c, "]")		
+		block_data[0][c].btn_animate = create_button_block(0, c, degree)	
+		print(block_data[0][c].btn_animate.rect_position.x)		
+		print(block_data[0][c].btn_animate.rect_position.x)		
 
 func put_down_block(col, src_data):
 	var tmp = null
@@ -266,14 +278,14 @@ func find_block_pass_path():
 	
 	return path_all
 
-func animate_block_on_position():
+func animate_block_on_position(delay_time):	
 	for row in MAX_ROW:
 		for col in MAX_COL:
 			if !block_data[row][col].is_destroy:
-				if block_data[row][col].btn_animate.rect_position.x != col * BLOCK_W + (BLOCK_W/2) or block_data[row][col].btn_animate.rect_position.y != row * BLOCK_W + (BLOCK_W/2):
-					block_data[row][col].btn_animate.move_to(col * BLOCK_W + (BLOCK_W/2), row * BLOCK_W + (BLOCK_W/2), true)
+				if block_data[row][col].btn_animate.rect_position.x != col * BLOCK_W + (BLOCK_W/2) or block_data[row][col].btn_animate.rect_position.y != row * BLOCK_W + (BLOCK_W/2):										
+					block_data[row][col].btn_animate.move_to(col * BLOCK_W , row * BLOCK_W , true, ANIMATE_TIME_BOX_DOWN)					
 			else:
-				block_data[row][col].btn_animate.queue_free()
+				block_data[row][col].btn_animate.queue_free()				
 							
 
 
@@ -363,6 +375,6 @@ func put_down_block_test():
 	
 	
 	
-	
-	
+func _on_Cat_wait_to_go_back():
+	add_delay_wait_to_destroy()
 	

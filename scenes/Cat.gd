@@ -1,11 +1,7 @@
 extends AnimatedSprite
 
-const DELAY_TIME_ANIMATE = 2
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-
+const DELAY_TIME_ANIMATE = 1
+signal wait_to_go_back
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -27,7 +23,7 @@ func walk():
 	add_child(tween)		
 	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
 	tween.start()
-	tween.interpolate_callback(self, DELAY_TIME_ANIMATE, "on_walk_completed")
+	tween.interpolate_callback(self, DELAY_TIME_ANIMATE/2, "on_walk_completed")
 
 
 func on_walk_completed():
@@ -35,13 +31,13 @@ func on_walk_completed():
 	
 
 func run():
-	var dif_x = 200	
+	var dif_x = 300	
 	$".".play("run")
 	var tween = Tween.new()
 	add_child(tween)		
 	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE*2, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
 	tween.start()
-	tween.interpolate_callback(self, DELAY_TIME_ANIMATE*2, "on_run_completed")
+	tween.interpolate_callback(self, DELAY_TIME_ANIMATE, "on_run_completed")
 	
 func on_run_completed():
 	goto_after_run()
@@ -54,7 +50,7 @@ func goto_after_run():
 	add_child(tween)		
 	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
 	tween.start()
-	tween.interpolate_callback(self, DELAY_TIME_ANIMATE, "on_after_run_completed")
+	tween.interpolate_callback(self, DELAY_TIME_ANIMATE/2, "on_after_run_completed")
 	
 func on_after_run_completed():
 	catch_fish()
@@ -73,3 +69,5 @@ func _on_animation_finished():
 
 func wating_to_go_back():
 	self.play("waiting_to_go_back")#	
+	emit_signal("wait_to_go_back")
+	
