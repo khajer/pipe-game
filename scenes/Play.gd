@@ -204,9 +204,7 @@ func animate_block_completed():
 		var random = rng.randi_range(0, 3)
 		var degree = 90 * random
 		print("create block row [0, ",c, "]")		
-		block_data[0][c].btn_animate = create_button_block(0, c, degree)	
-		print(block_data[0][c].btn_animate.rect_position.x)		
-		print(block_data[0][c].btn_animate.rect_position.x)		
+		block_data[0][c] = gen_block(0, c, degree)
 
 func put_down_block(col, src_data):
 	var tmp = null
