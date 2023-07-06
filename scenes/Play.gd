@@ -14,6 +14,7 @@ func _ready():
 	
 	test()
 	
+	
 	var value_block = gen_value_block()
 	create_block(value_block)
 	
@@ -124,11 +125,11 @@ func gen_block(r, c, block_degree):
 func on_block_pressed(r, c, rotation_degrees):
 	print(">>>>[", r, ", ", c, "] < row, col")
 	var block = block_data[r][c]
-	print("receive signal block_pressed", block)
-	print("rotate : ", rotation_degrees)
-	print("> ",block.rotation_degrees, " ", block.connect_left, block.connect_top, block.connect_right, block.connect_bottom)
+#	print("receive signal block_pressed", block)
+#	print("rotate : ", rotation_degrees)
+#	print("> ",block.rotation_degrees, " ", block.connect_left, block.connect_top, block.connect_right, block.connect_bottom)
 	
-	show_data(block_data)
+#	show_data(block_data)
 	block.rotate_block(rotation_degrees)
 	
 	clear_link_block(block)
@@ -142,33 +143,32 @@ func check_block_path_allow():
 	var block_paths = find_block_pass_path()
 	
 	if len(block_paths) > 0 :
-		is_go = !is_go
-		
+		print("block path found  --> ")
+		is_go = !is_go		
 		if is_go == true:
 			catch_fish_by_cat()
 		else:
 			go_back_home_cat()
 	
-		destroy_path(block_paths)
+		animate_destroy_path(block_paths)
 		
 	else:
 		print("not found")
 
 func go_back_home_cat():
-	pass
+	$Cat.run_to_home()	
 
 func catch_fish_by_cat():
-	$Cat.run_to_catch_fish()
-	pass
+	$Cat.run_to_catch_fish()	
 	
-func destroy_path(block_paths):
+func animate_destroy_path(block_paths):
 	for blockpath in block_paths:
 		for block in blockpath:
 			block.is_destroy = true
 			block.btn_animate.get_child(0).play("destroy")
 		
-
 func add_delay_wait_to_destroy():
+	print("add_delay_wait_to_destroy")
 	dynamicTimer = Timer.new()
 	dynamicTimer.wait_time = DELAY_TIME
 	dynamicTimer.one_shot = true
@@ -196,15 +196,22 @@ func animate_all_block():
 	animate_block_on_position(ANIMATE_TIME_BOX_DOWN)
 
 
+func random_degree():
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	var random = rng.randi_range(0, 3)
+	return  90 * random	
+
 func animate_block_completed():	
 	print("create fist row blockdata")
-	for c in range(0, MAX_COL):
-		var rng = RandomNumberGenerator.new()
-		rng.randomize()
-		var random = rng.randi_range(0, 3)
-		var degree = 90 * random
+	
+	for c in range(0, MAX_COL):		
 		print("create block row [0, ",c, "]")		
-		block_data[0][c] = gen_block(0, c, degree)
+		block_data[0][c] = gen_block(0, c, random_degree())
+	
+	for c in range(0, MAX_COL):
+		set_link_block(block_data[0][c])
+		
 
 func put_down_block(col, src_data):
 	var tmp = null
@@ -216,7 +223,6 @@ func put_down_block(col, src_data):
 					src_data[row][col] = src_data[r_chk][col]
 					src_data[r_chk][col] = tmp
 					break
-
 			
 	
 func clear_link_block(block: Block):
@@ -285,7 +291,6 @@ func animate_block_on_position(delay_time):
 			else:
 				block_data[row][col].btn_animate.queue_free()				
 							
-
 
 func test():
 	put_down_block_test()
@@ -372,7 +377,6 @@ func put_down_block_test():
 	print(data_test[4][0].value=="4")
 	
 	
-	
-func _on_Cat_wait_to_go_back():
+# delegate by Cat 
+func _on_Cat_run_completed():
 	add_delay_wait_to_destroy()
-	

@@ -98,11 +98,10 @@ script = ExtResource( 1 )
 position = Vector2( 59, 140 )
 frames = SubResource( 1 )
 animation = "idle"
-frame = 4
 playing = true
 script = ExtResource( 42 )
 
 [node name="Blocks" type="Node2D" parent="."]
 position = Vector2( 27, 202 )
 
-[connection signal="wait_to_go_back" from="Cat" to="." method="_on_Cat_wait_to_go_back"]
+[connection signal="run_completed" from="Cat" to="." method="_on_Cat_run_completed"]

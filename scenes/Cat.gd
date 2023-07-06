@@ -1,21 +1,21 @@
 extends AnimatedSprite
 
 const DELAY_TIME_ANIMATE = 1
-signal wait_to_go_back
+signal run_completed
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self.connect("animation_finished", self, "_on_animation_finished")
 
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
-
+func run_to_home():
+	print("run to home")
+	pass 
+	
 func run_to_catch_fish():
 	walk()
-	
+
+
 func walk():
 	var dif_x = 20	
 	$".".play("walk_pass")
@@ -69,5 +69,5 @@ func _on_animation_finished():
 
 func wating_to_go_back():
 	self.play("waiting_to_go_back")#	
-	emit_signal("wait_to_go_back")
+	emit_signal("run_completed")
 	
