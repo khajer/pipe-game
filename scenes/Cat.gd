@@ -10,7 +10,18 @@ func _ready():
 
 func run_to_home():
 	print("run to home")
-	pass 
+	
+	var dif_x = -200	
+	$".".play("cat_walk_home")
+	var tween = Tween.new()
+	add_child(tween)		
+	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
+	tween.start()
+	tween.interpolate_callback(self, DELAY_TIME_ANIMATE/2, "on_run_back_completed")
+
+func on_run_back_completed():
+	self.play("eat_fish")#	
+	emit_signal("run_completed")
 	
 func run_to_catch_fish():
 	walk()

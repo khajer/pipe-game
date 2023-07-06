@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=2]
+[gd_scene load_steps=81 format=2]
 
 [ext_resource path="res://scenes/Play.gd" type="Script" id=1]
 [ext_resource path="res://assets/images/cats/0/idle/0.png" type="Texture" id=2]
@@ -57,6 +57,28 @@
 [ext_resource path="res://assets/images/cats/0/wait_back/1.png" type="Texture" id=55]
 [ext_resource path="res://assets/images/cats/0/wait_back/2.png" type="Texture" id=56]
 [ext_resource path="res://assets/images/cats/0/wait_back/3.png" type="Texture" id=57]
+[ext_resource path="res://assets/images/cats/0/eat_fish/0.png" type="Texture" id=58]
+[ext_resource path="res://assets/images/cats/0/eat_fish/1.png" type="Texture" id=59]
+[ext_resource path="res://assets/images/cats/0/eat_fish/2.png" type="Texture" id=60]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/3.png" type="Texture" id=61]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/8.png" type="Texture" id=62]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/9.png" type="Texture" id=63]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/10.png" type="Texture" id=64]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/3.png" type="Texture" id=65]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/4.png" type="Texture" id=66]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/5.png" type="Texture" id=67]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/6.png" type="Texture" id=68]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/7.png" type="Texture" id=69]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/4.png" type="Texture" id=70]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/0.png" type="Texture" id=71]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/1.png" type="Texture" id=72]
+[ext_resource path="res://assets/images/cats/0/cat_walk_back/2.png" type="Texture" id=73]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/0.png" type="Texture" id=74]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/1.png" type="Texture" id=75]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/2.png" type="Texture" id=76]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/5.png" type="Texture" id=77]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/6.png" type="Texture" id=78]
+[ext_resource path="res://assets/images/cats/0/cat_walk_home/7.png" type="Texture" id=79]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -65,10 +87,20 @@ animations = [ {
 "name": "after_run",
 "speed": 8.0
 }, {
+"frames": [ ExtResource( 74 ), ExtResource( 75 ), ExtResource( 76 ), ExtResource( 61 ), ExtResource( 70 ), ExtResource( 77 ), ExtResource( 78 ), ExtResource( 79 ), ExtResource( 62 ), ExtResource( 63 ), ExtResource( 64 ), ExtResource( 71 ), ExtResource( 72 ), ExtResource( 73 ), ExtResource( 65 ), ExtResource( 66 ), ExtResource( 67 ), ExtResource( 68 ), ExtResource( 69 ) ],
+"loop": false,
+"name": "cat_walk_home",
+"speed": 8.0
+}, {
 "frames": [ ExtResource( 50 ), ExtResource( 51 ), ExtResource( 52 ), ExtResource( 43 ), ExtResource( 48 ), ExtResource( 49 ), ExtResource( 45 ), ExtResource( 46 ), ExtResource( 44 ), ExtResource( 47 ), ExtResource( 53 ) ],
 "loop": false,
 "name": "catch_fish",
 "speed": 8.0
+}, {
+"frames": [ ExtResource( 58 ), ExtResource( 59 ), ExtResource( 60 ) ],
+"loop": true,
+"name": "eat_fish",
+"speed": 5.0
 }, {
 "frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ) ],
 "loop": true,
