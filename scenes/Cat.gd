@@ -11,7 +11,7 @@ func _ready():
 func run_to_home():
 	print("run to home")
 	
-	var dif_x = -200	
+	var dif_x = -100	
 	$".".play("cat_walk_home")
 	var tween = Tween.new()
 	add_child(tween)		
@@ -26,7 +26,6 @@ func on_run_back_completed():
 func run_to_catch_fish():
 	walk()
 
-
 func walk():
 	var dif_x = 20	
 	$".".play("walk_pass")
@@ -34,7 +33,7 @@ func walk():
 	add_child(tween)		
 	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
 	tween.start()
-	tween.interpolate_callback(self, DELAY_TIME_ANIMATE/2, "on_walk_completed")
+	tween.interpolate_callback(self, DELAY_TIME_ANIMATE, "on_walk_completed")
 
 
 func on_walk_completed():
@@ -42,11 +41,11 @@ func on_walk_completed():
 	
 
 func run():
-	var dif_x = 300	
+	var dif_x = 100	
 	$".".play("run")
 	var tween = Tween.new()
 	add_child(tween)		
-	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE*2, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
+	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
 	tween.start()
 	tween.interpolate_callback(self, DELAY_TIME_ANIMATE, "on_run_completed")
 	
@@ -61,11 +60,10 @@ func goto_after_run():
 	add_child(tween)		
 	tween.interpolate_property(self, "position", self.position, Vector2(self.position.x+dif_x, self.position.y), DELAY_TIME_ANIMATE, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)	
 	tween.start()
-	tween.interpolate_callback(self, DELAY_TIME_ANIMATE/2, "on_after_run_completed")
+	tween.interpolate_callback(self, DELAY_TIME_ANIMATE, "on_after_run_completed")
 	
 func on_after_run_completed():
 	catch_fish()
-
 
 func catch_fish():
 	self.play("catch_fish")#	

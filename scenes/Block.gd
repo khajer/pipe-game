@@ -20,7 +20,7 @@ var rotation_degrees = 0
 
 func _init(blocktype, rotation_degrees):
 	self.blocktype = blocktype
-	self.rotation_degrees = rotation_degrees	
+	self.rotation_degrees = rotation_degrees%360	
 	_set_connect_side(int(self.rotation_degrees%360))
 	
 func _set_connect_side(degrees):		
@@ -46,9 +46,9 @@ func setRowCol(r, c):
 	btn_animate.col = c
 	
 func rotate_block(degree):	
-	self.rotation_degrees += degree
-	if self.rotation_degrees > MAX_DEGREES:
-		self.rotation_degrees -= MAX_DEGREES 
+	self.rotation_degrees += degree	
+	if self.rotation_degrees >= MAX_DEGREES:
+		self.rotation_degrees = self.rotation_degrees%MAX_DEGREES
 			
 	_set_connect_side(self.rotation_degrees)
 	

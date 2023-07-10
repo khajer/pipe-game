@@ -30,27 +30,30 @@ func create_block(value_block):
 	for r in range (0, MAX_ROW):
 		var row = []
 		for c in range(0, MAX_COL):
-			var block = gen_block( r, c, value_block[r][c].degrees)						
-			if c == MAX_COL-1:
-				block.is_last_path = true
-			
-			if c > 0:
-				if block.connect_left == true and row[c-1].connect_right == true:
-					row[c-1].links.append(block)
-					block.links.append(row[c-1])
-			
-			if r > 0:
-				if block.connect_top == true and block_data[r-1][c].connect_bottom == true:
-					block_data[r-1][c].links.append(block)
-					block.links.append(block_data[r-1][c])
-
+			var block = gen_block( r, c, value_block[r][c].degrees)
+			set_link_left_top_per_row(block, r, c, row)
 			row.append(block)
 		block_data.append(row)
 	
-	show_data(block_data)
-	show_connect(block_data)
-	show_block_detail(block_data)
+#	show_data(block_data)
+#	show_connect(block_data)
+#	show_block_detail(block_data)
+
+func set_link_left_top_per_row(block, r, c, row):
+	if c == MAX_COL-1:
+		block.is_last_path = true
 	
+	if c > 0:
+		if block.connect_left == true and row[c-1].connect_right == true:
+			row[c-1].links.append(block)
+			block.links.append(row[c-1])
+	
+	if r > 0:
+		if block.connect_top == true and block_data[r-1][c].connect_bottom == true:
+			block_data[r-1][c].links.append(block)
+			block.links.append(block_data[r-1][c])
+			
+			
 func show_data(data):
 	for r in range(0, MAX_ROW):
 		var s = ""
@@ -70,7 +73,7 @@ func show_connect(data):
 		print(s)
 
 func show_block_detail(data):
-	print("--")
+	print("--- block connect [left, top, right, bottom]")
 	for r in range(0, MAX_ROW):
 		for c in range (0, MAX_COL):
 			print(r, " ", c, ": ",
@@ -78,6 +81,14 @@ func show_block_detail(data):
 				block_data[r][c].connect_top," ",
 				block_data[r][c].connect_right, " ",
 				block_data[r][c].connect_bottom)
+				
+func show_block_degree(data):
+	print("--- block degree ")
+	for r in range(0, MAX_ROW):
+		var s = ""
+		for c in range (0, MAX_COL):
+			s += str(data[r][c].rotation_degrees)+" "
+		print(s)				
 
 
 func gen_value_block():
@@ -123,27 +134,35 @@ func gen_block(r, c, block_degree):
 	
 
 func on_block_pressed(r, c, rotation_degrees):
-	print(">>>>[", r, ", ", c, "] < row, col")
+	print(" delegrate button  >- [", r, ", ", c, "] < row, col")
 	var block = block_data[r][c]
-#	print("receive signal block_pressed", block)
-#	print("rotate : ", rotation_degrees)
-#	print("> ",block.rotation_degrees, " ", block.connect_left, block.connect_top, block.connect_right, block.connect_bottom)
+	print("box[",block.row,",",block.col,"]")
 	
-#	show_data(block_data)
+	if block.row != r or block.col != c:
+		print("!!! ERROR : data row, col block incorect !!!")
+#	show_connect(block_data)	
 	block.rotate_block(rotation_degrees)
 	
-	clear_link_block(block)
+	clear_link_block(block)	
 	set_link_block(block)
 	
-#	show_connect(block_data)
-#	show_block_detail(block_data)
+	print("---------------------- after click ----------------------")
+	show_block_degree(block_data)
+#	show_block_detail(block_data)	
+	
+	print(block_data[4][0], block_data[4][0].links)
+	print(block_data[4][1], block_data[4][1].links)
+	print(block_data[4][2], block_data[4][2].links)
+	print(block_data[4][3], block_data[4][3].links)
+	
+	
 	check_block_path_allow()
 
 func check_block_path_allow():
 	var block_paths = find_block_pass_path()
 	
 	if len(block_paths) > 0 :
-		print("block path found  --> ")
+		print("block path found !!! ")
 		is_go = !is_go		
 		if is_go == true:
 			catch_fish_by_cat()
@@ -153,7 +172,7 @@ func check_block_path_allow():
 		animate_destroy_path(block_paths)
 		
 	else:
-		print("not found")
+		print("not found !!!")
 
 func go_back_home_cat():
 	$Cat.run_to_home()	
@@ -203,15 +222,37 @@ func random_degree():
 	return  90 * random	
 
 func animate_block_completed():	
-	print("create fist row blockdata")
+	print("create fist row block data !!!!!")
 	
-	for c in range(0, MAX_COL):		
-		print("create block row [0, ",c, "]")		
-		block_data[0][c] = gen_block(0, c, random_degree())
+#	for c in range(0, MAX_COL):				
+#		block_data[0][c] = gen_block(0, c, random_degree())
+
+	block_data[0][0] = gen_block(0, 0, 0)		
+	block_data[0][1] = gen_block(0, 1, 90)		
+	block_data[0][2] = gen_block(0, 2, 180)		
+	block_data[0][3] = gen_block(0, 3, 90)		
 	
-	for c in range(0, MAX_COL):
-		set_link_block(block_data[0][c])
-		
+	clear_link_and_reset_position_btn()	
+	set_link()
+
+#	show_data(block_data)
+#	show_connect(block_data)
+#	show_block_detail(block_data)
+
+func set_link():	
+	for r in range(0, MAX_ROW):
+		for c in range(0, MAX_COL):		
+			set_link_left_top_per_row(block_data[r][c], r, c, block_data[r])
+
+
+func clear_link_and_reset_position_btn():	
+	for r in range(0, MAX_ROW):
+		for c in range(0, MAX_COL):
+			block_data[r][c].links = []
+			block_data[r][c].btn_animate.row = r
+			block_data[r][c].btn_animate.col = c
+			block_data[r][c].row = r
+			block_data[r][c].col = c
 
 func put_down_block(col, src_data):
 	var tmp = null
@@ -221,15 +262,16 @@ func put_down_block(col, src_data):
 				if src_data[r_chk][col].is_destroy == false:
 					tmp = src_data[row][col]
 					src_data[row][col] = src_data[r_chk][col]
+					
 					src_data[r_chk][col] = tmp
 					break
-			
+	
 	
 func clear_link_block(block: Block):
 	block.clear_link_block()
 	
 	
-func set_link_block(block: Block):
+func set_link_block(block: Block):				
 	if block.connect_left == true and block.col-1 >= 0 and block_data[block.row][block.col-1].connect_right == true :
 		block_data[block.row][block.col-1].links.append(block)
 		block.links.append(block_data[block.row][block.col-1])
@@ -275,8 +317,7 @@ func find_block_pass_path():
 	]
 		
 	for block_start in head_blocks:
-		var paths = check_block(block_start, [])
-		print(paths)
+		var paths = check_block(block_start, [])		
 		if len(paths) != 0:
 			path_all.append(paths)
 	
@@ -292,6 +333,10 @@ func animate_block_on_position(delay_time):
 				block_data[row][col].btn_animate.queue_free()				
 							
 
+# delegate by Cat 
+func _on_Cat_run_completed():
+	add_delay_wait_to_destroy()
+	
 func test():
 	put_down_block_test()
 	
@@ -376,7 +421,6 @@ func put_down_block_test():
 	print(data_test[3][0].value=="3")
 	print(data_test[4][0].value=="4")
 	
-	
-# delegate by Cat 
-func _on_Cat_run_completed():
-	add_delay_wait_to_destroy()
+
+
+
