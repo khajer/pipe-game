@@ -221,16 +221,46 @@ func random_degree():
 	var random = rng.randi_range(0, 3)
 	return  90 * random	
 
+func gen4BlockDegree():
+	var blocks = []
+	for i in range(0, 4):
+		blocks.append(random_degree())
+	
+	return blocks
+
+func isBlockHorizontal(block):
+	if block == 0 or block == 180 : 
+		return true
+	return false
+	
+func checkPaht4BlockHorizontal(blocks):
+	if isBlockHorizontal(blocks[0]) and isBlockHorizontal(blocks[1]) and isBlockHorizontal(blocks[2]) and isBlockHorizontal(blocks[3]) :
+		return true
+		
+	return false
+	
+	
+	
 func animate_block_completed():	
 	print("create fist row block data !!!!!")
 	
-#	for c in range(0, MAX_COL):				
-#		block_data[0][c] = gen_block(0, c, random_degree())
+	var blocksLineDegree = []
+	while true:
+		blocksLineDegree = gen4BlockDegree()		
+		if !checkPaht4BlockHorizontal(blocksLineDegree):
+			break
+			
+	var c = 0
+	for degree in blocksLineDegree :				
+		block_data[0][c] = gen_block(0, c, degree)
+		c = c+1
+	
+		
 
-	block_data[0][0] = gen_block(0, 0, 0)		
-	block_data[0][1] = gen_block(0, 1, 90)		
-	block_data[0][2] = gen_block(0, 2, 180)		
-	block_data[0][3] = gen_block(0, 3, 90)		
+#	block_data[0][0] = gen_block(0, 0, 0)		
+#	block_data[0][1] = gen_block(0, 1, 90)		
+#	block_data[0][2] = gen_block(0, 2, 180)		
+#	block_data[0][3] = gen_block(0, 3, 90)		
 	
 	clear_link_and_reset_position_btn()	
 	set_link()
