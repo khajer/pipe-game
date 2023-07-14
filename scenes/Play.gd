@@ -13,8 +13,7 @@ var is_go = false
 func _ready():
 	
 	test()
-	
-	
+		
 	var value_block = gen_value_block()
 	create_block(value_block)
 	
@@ -92,13 +91,39 @@ func show_block_degree(data):
 
 
 func gen_value_block():
+	
 	return [
-		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=0}],
-		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=0}],
-		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=180}],
-		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
-		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
+		[{degrees=90}, {degrees=0}, {degrees=90}, {degrees=0}],
+		[{degrees=90}, {degrees=0}, {degrees=180}, {degrees=270}],
+		[{degrees=270}, {degrees=0}, {degrees=90}, {degrees=0}],
+		[{degrees=90}, {degrees=180}, {degrees=270}, {degrees=0}],
+		[{degrees=90}, {degrees=180}, {degrees=0}, {degrees=180}],
 	]
+	
+#	return [
+#		[{degrees=180}, {degrees=0}, {degrees=90}, {degrees=0}],
+#		[{degrees=90}, {degrees=0}, {degrees=180}, {degrees=270}],
+#		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
+#		[{degrees=270}, {degrees=180}, {degrees=270}, {degrees=0}],
+#		[{degrees=270}, {degrees=180}, {degrees=0}, {degrees=180}],
+#	]
+	
+	# bug 1
+#	return [
+#		[{degrees=180}, {degrees=0}, {degrees=90}, {degrees=0}],
+#		[{degrees=270}, {degrees=180}, {degrees=270}, {degrees=0}],
+#		[{degrees=270}, {degrees=180}, {degrees=0}, {degrees=180}],
+#		[{degrees=90}, {degrees=0}, {degrees=180}, {degrees=270}],
+#		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
+#	]
+
+#	return [
+#		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=0}],
+#		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=0}],
+#		[{degrees=0}, {degrees=90}, {degrees=0}, {degrees=180}],
+#		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
+#		[{degrees=0}, {degrees=0}, {degrees=90}, {degrees=0}],
+#	]
 	
 #	var rng = RandomNumberGenerator.new()
 #	rng.randomize()
@@ -154,12 +179,11 @@ func on_block_pressed(r, c, rotation_degrees):
 	print(block_data[4][1], block_data[4][1].links)
 	print(block_data[4][2], block_data[4][2].links)
 	print(block_data[4][3], block_data[4][3].links)
-	
-	
-	check_block_path_allow()
+		
+	check_block_path_allow(r)
 
-func check_block_path_allow():
-	var block_paths = find_block_pass_path()
+func check_block_path_allow(r):
+	var block_paths = find_block_pass_path(r)
 	
 	if len(block_paths) > 0 :
 		print("block path found !!! ")
@@ -335,22 +359,26 @@ func check_block(block: Block, blockpath):
 			return check_block(b, blockpath)
 		return []
 
-func find_block_pass_path():
+func find_block_pass_path(r=-1):
 	var path_all = []
-	
-	var head_blocks = [
-		block_data[0][0],
-		block_data[1][0],
-		block_data[2][0],
-		block_data[3][0],
-		block_data[4][0]
-	]
-		
-	for block_start in head_blocks:
+	if r == -1:
+		var head_blocks = [
+			block_data[0][0],
+			block_data[1][0],
+			block_data[2][0],
+			block_data[3][0],
+			block_data[4][0]
+		]
+		for block_start in head_blocks:					
+			var paths = check_block(block_start, [])		
+			if len(paths) != 0:
+				path_all.append(paths)		
+	else:		
+		var block_start = block_data[r][0]
 		var paths = check_block(block_start, [])		
 		if len(paths) != 0:
 			path_all.append(paths)
-	
+		
 	return path_all
 
 func animate_block_on_position(delay_time):	
